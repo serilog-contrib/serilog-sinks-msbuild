@@ -1,0 +1,1 @@
+serilog-sinks-msbuild
