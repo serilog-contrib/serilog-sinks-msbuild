@@ -1,5 +1,8 @@
 # A Serilog sink for MSBuild
 
+![License: Apache License 2.0](https://img.shields.io/github/license/teo-tsirpanis/serilog-sinks-msbuild.svg)
+[![Nuget package: Serilog.Sinks.MSBuild](https://img.shields.io/nuget/v/Serilog.Sinks.MSBuild.svg)](https://www.nuget.org/packages/Serilog.Sinks.MSBuild/)
+
 ## How to use
 
 ``` csharp
