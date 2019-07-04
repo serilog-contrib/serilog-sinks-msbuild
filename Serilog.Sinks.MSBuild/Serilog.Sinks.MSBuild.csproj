@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Title>Serilog sink for MSBuild</Title>
     <Authors>Theodore Tsirpanis</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageTags>serilog;logging;msbuild</PackageTags>

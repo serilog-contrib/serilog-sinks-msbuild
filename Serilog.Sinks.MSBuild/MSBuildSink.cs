@@ -1,9 +1,24 @@
-﻿using System;
+﻿// Copyright 2019 Theodore Tsirpanis
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
+
 // ReSharper disable InconsistentNaming
 
 namespace Serilog.Sinks.MSBuild
@@ -47,11 +62,14 @@ namespace Serilog.Sinks.MSBuild
             }
         }
     }
+}
 
-    public static class MSBuildSinkExtensions
+namespace Serilog
+{
+    public static class MSBuildSinkConfigurationExtensions
     {
         public static LoggerConfiguration MSBuild(this LoggerSinkConfiguration loggerConfiguration, ITask task,
             IFormatProvider formatProvider = null) =>
-            loggerConfiguration.Sink(new MSBuildSink(task, formatProvider));
+            loggerConfiguration.Sink(new Serilog.Sinks.MSBuild.MSBuildSink(task, formatProvider));
     }
 }
