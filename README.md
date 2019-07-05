@@ -12,10 +12,21 @@ using Serilog;
 public class MyTask: Task {
 
     public override bool Execute() {
-        using (ILogger _logger = new LoggerConfiguration().WriteTo.MSBuild().CreateLogger()) {
+        using (ILogger _logger = new LoggerConfiguration().WriteTo.MSBuild(this).CreateLogger()) {
             _logger.Information("Hello from my custom Serilog-powered task");
             // [...]
             return true;
         };
     }
 }
+```
+
+## Important properties
+
+Some Serilog properties are important for this sink, as carry significant information for MSBuild.
+
+They are covered in `Serilog.Sinks.MSBuild.MSBuildMessages`.
+
+## Maintainer(s)
+
+- [@teo-tsirpanis](https://github.com/teo-tsirpanis)

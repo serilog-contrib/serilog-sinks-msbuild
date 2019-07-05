@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>1.1.0</Version>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <Title>Serilog sink for MSBuild</Title>
     <Authors>Theodore Tsirpanis</Authors>
@@ -11,10 +12,7 @@
 It is useful when an MSBuild task calls code that uses Serilog.</Description>
     <PackageIconUrl>https://serilog.net/images/serilog-sink-nuget.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/teo-tsirpanis/serilog-sinks-msbuild</PackageProjectUrl>
-    <PackageReleaseNotes>
-      Initial release. It is very crude and does not integrate deeply with MSBuild.
-      That's because MSBuild does not natively support structured logging like Serilog.
-    </PackageReleaseNotes>
+    <PackageReleaseNotes>Add deeper integration with MSBuild.</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -23,7 +21,7 @@ It is useful when an MSBuild task calls code that uses Serilog.</Description>
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19351-01" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
