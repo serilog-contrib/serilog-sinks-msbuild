@@ -13,6 +13,7 @@ It is useful when an MSBuild task calls code that uses Serilog.</Description>
     <PackageIconUrl>https://serilog.net/images/serilog-sink-nuget.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/teo-tsirpanis/serilog-sinks-msbuild</PackageProjectUrl>
     <PackageReleaseNotes>Add deeper integration with MSBuild.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>

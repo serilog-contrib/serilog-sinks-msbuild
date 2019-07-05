@@ -60,17 +60,26 @@ namespace Serilog.Sinks.MSBuild
         public static readonly string EndColumnNumber = nameof(EndColumnNumber);
     }
 
+    /// <summary>
+    /// A Serilog sink that redirects events to MSBuild.
+    /// </summary>
     public class MSBuildSink : ILogEventSink
     {
         private readonly IFormatProvider _formatProvider;
         private readonly TaskLoggingHelper _loggingHelper;
 
+        /// <summary>
+        /// Creates an <see cref="MSBuildSink"/> for <paramref name="task"/>.
+        /// </summary>
+        /// <param name="task">The <see cref="ITask"/> inside which events are sent.</param>
+        /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
         public MSBuildSink(ITask task, IFormatProvider formatProvider = null)
         {
             _formatProvider = formatProvider;
             _loggingHelper = new TaskLoggingHelper(task);
         }
 
+        /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
             string GetPropertyOrNull(string key) =>
@@ -139,7 +148,7 @@ namespace Serilog
         /// <param name="task">The MSBuild <see cref="ITask"/> to log events for.</param>
         /// <param name="restrictedToMinimumLevel">The minimum level for
         /// events passed through the sink. Ignored when <paramref name="levelSwitch"/> is specified.</param>
-        /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
+        /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
         /// <param name="levelSwitch">A switch allowing the pass-through minimum level
         /// to be changed at runtime.</param>
         /// <returns>Configuration object allowing method chaining.</returns>
