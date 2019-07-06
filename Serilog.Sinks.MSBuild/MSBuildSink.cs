@@ -76,7 +76,7 @@ namespace Serilog.Sinks.MSBuild
         public MSBuildSink(ITask task, IFormatProvider formatProvider = null)
         {
             _formatProvider = formatProvider;
-            _loggingHelper = new TaskLoggingHelper(task);
+            _loggingHelper = task is Task taskConcrete ? taskConcrete.Log : new TaskLoggingHelper(task);
         }
 
         /// <inheritdoc cref="ILogEventSink.Emit"/>
