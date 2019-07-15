@@ -34,26 +34,32 @@ namespace Serilog.Sinks.MSBuild
         /// The message's error code.
         /// </summary>
         public static readonly string MessageCode = nameof(MessageCode);
+
         /// <summary>
         /// The help keyword for the host IDE (can be null).
         /// </summary>
         public static readonly string HelpKeyword = nameof(HelpKeyword);
+
         /// <summary>
         /// The path to the file causing the message.
         /// </summary>
         public static readonly string File = nameof(File);
+
         /// <summary>
         /// The line in the file causing the message.
         /// </summary>
         public static readonly string LineNumber = nameof(LineNumber);
+
         /// <summary>
         /// The column in the file causing the message.
         /// </summary>
         public static readonly string ColumnNumber = nameof(ColumnNumber);
+
         /// <summary>
         /// The last line of a range of lines in the file causing the message,
         /// </summary>
         public static readonly string EndLineNumber = nameof(EndLineNumber);
+
         /// <summary>
         /// The last column of a range of columns in the file causing the message,
         /// </summary>
@@ -118,14 +124,18 @@ namespace Serilog.Sinks.MSBuild
                 case LogEventLevel.Warning:
                     _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
-                    break;
-                case LogEventLevel.Error:
-                    _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
-                        lineEndNumber, columnEndNumber, message);
+                    if (logEvent.Exception != null)
+                        _loggingHelper.LogWarningFromException(logEvent.Exception);
                     break;
                 case LogEventLevel.Fatal:
-                    _loggingHelper.LogCriticalMessage(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
+                case LogEventLevel.Error:
+                    if (logEvent.Level == LogEventLevel.Fatal)
+                        _loggingHelper.LogError("Fatal error", code, helpKeyword, file, lineNumber, columnNumber,
+                            lineEndNumber, columnEndNumber, "A fatal error did occur");
+                    _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
+                    if (logEvent.Exception != null)
+                        _loggingHelper.LogErrorFromException(logEvent.Exception, false, false, file);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -146,14 +156,12 @@ namespace Serilog
         /// </summary>
         /// <param name="sinkConfiguration">Logger sink configuration.</param>
         /// <param name="task">The MSBuild <see cref="ITask"/> to log events for.</param>
-        /// <param name="restrictedToMinimumLevel">The minimum level for
-        /// events passed through the sink. Ignored when <paramref name="levelSwitch"/> is specified.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
-        /// <param name="levelSwitch">A switch allowing the pass-through minimum level
-        /// to be changed at runtime.</param>
         /// <returns>Configuration object allowing method chaining.</returns>
+        /// <remarks>Because this sink redirects messages to another logging system,
+        /// it is recommended to allow all event levels to pass through.</remarks>
         public static LoggerConfiguration MSBuild(this LoggerSinkConfiguration sinkConfiguration, ITask task,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum, IFormatProvider formatProvider = null, LoggingLevelSwitch levelSwitch = null) =>
-            sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(task, formatProvider), restrictedToMinimumLevel, levelSwitch);
+            IFormatProvider formatProvider = null) =>
+            sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(task, formatProvider));
     }
 }
