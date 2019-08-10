@@ -31,6 +31,11 @@ namespace Serilog.Sinks.MSBuild
     public static class MSBuildProperties
     {
         /// <summary>
+        /// The message's subcategory.
+        /// </summary>
+        public static readonly string Subcategory = nameof(Subcategory);
+
+        /// <summary>
         /// The message's error code.
         /// </summary>
         public static readonly string MessageCode = nameof(MessageCode);
@@ -88,7 +93,7 @@ namespace Serilog.Sinks.MSBuild
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
-            string GetPropertyOrNull(string key) =>
+            string GetStringOrNull(string key) =>
                 logEvent.Properties.TryGetValue(key, out var value) ? value.ToString() : null;
 
             int GetIntOrZero(string key) =>
@@ -97,10 +102,10 @@ namespace Serilog.Sinks.MSBuild
                     ? numValue
                     : 0;
 
-            string subcategory = logEvent.MessageTemplate.Text;
-            string code = GetPropertyOrNull(MessageCode);
-            string helpKeyword = GetPropertyOrNull(HelpKeyword);
-            string file = GetPropertyOrNull(File);
+            string subcategory = GetStringOrNull(Subcategory);
+            string code = GetStringOrNull(MessageCode);
+            string helpKeyword = GetStringOrNull(HelpKeyword);
+            string file = GetStringOrNull(File);
             int lineNumber = GetIntOrZero(LineNumber);
             int columnNumber = GetIntOrZero(ColumnNumber);
             int lineEndNumber = GetIntOrZero(EndLineNumber);
@@ -130,8 +135,7 @@ namespace Serilog.Sinks.MSBuild
                 case LogEventLevel.Fatal:
                 case LogEventLevel.Error:
                     if (logEvent.Level == LogEventLevel.Fatal)
-                        _loggingHelper.LogError("Fatal error", code, helpKeyword, file, lineNumber, columnNumber,
-                            lineEndNumber, columnEndNumber, "A fatal error did occur");
+                        subcategory = subcategory ?? "Fatal error";
                     _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     if (logEvent.Exception != null)

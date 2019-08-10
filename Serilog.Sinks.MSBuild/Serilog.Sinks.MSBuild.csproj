@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <Title>Serilog sink for MSBuild</Title>
     <Authors>Theodore Tsirpanis</Authors>
@@ -12,7 +12,7 @@
 It is useful when an MSBuild task calls code that uses Serilog.</Description>
     <PackageIconUrl>https://serilog.net/images/serilog-sink-nuget.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/teo-tsirpanis/serilog-sinks-msbuild</PackageProjectUrl>
-    <PackageReleaseNotes>Handle exceptions and fatal errors better.</PackageReleaseNotes>
+    <PackageReleaseNotes>Allow the specification of the message subcategory.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
