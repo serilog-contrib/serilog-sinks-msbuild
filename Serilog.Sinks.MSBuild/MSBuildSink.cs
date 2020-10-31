@@ -1,11 +1,11 @@
 ﻿// Copyright 2019 Theodore Tsirpanis
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,7 +76,7 @@ namespace Serilog.Sinks.MSBuild
     /// </summary>
     public class MSBuildSink : ILogEventSink
     {
-        private readonly IFormatProvider _formatProvider;
+        private readonly IFormatProvider? _formatProvider;
         private readonly TaskLoggingHelper _loggingHelper;
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Serilog.Sinks.MSBuild
         /// </summary>
         /// <param name="task">The <see cref="ITask"/> inside which events are sent.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
-        public MSBuildSink(ITask task, IFormatProvider formatProvider = null)
+        public MSBuildSink(ITask task, IFormatProvider? formatProvider = null)
         {
             _formatProvider = formatProvider;
             _loggingHelper = task is Task taskConcrete ? taskConcrete.Log : new TaskLoggingHelper(task);
@@ -93,7 +93,7 @@ namespace Serilog.Sinks.MSBuild
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
-            string GetStringOrNull(string key) =>
+            string? GetStringOrNull(string key) =>
                 logEvent.Properties.TryGetValue(key, out var value) ? value.ToString() : null;
 
             int GetIntOrZero(string key) =>
@@ -102,10 +102,10 @@ namespace Serilog.Sinks.MSBuild
                     ? numValue
                     : 0;
 
-            string subcategory = GetStringOrNull(Subcategory);
-            string code = GetStringOrNull(MessageCode);
-            string helpKeyword = GetStringOrNull(HelpKeyword);
-            string file = GetStringOrNull(File);
+            string? subcategory = GetStringOrNull(Subcategory);
+            string? code = GetStringOrNull(MessageCode);
+            string? helpKeyword = GetStringOrNull(HelpKeyword);
+            string? file = GetStringOrNull(File);
             int lineNumber = GetIntOrZero(LineNumber);
             int columnNumber = GetIntOrZero(ColumnNumber);
             int lineEndNumber = GetIntOrZero(EndLineNumber);
@@ -165,7 +165,7 @@ namespace Serilog
         /// <remarks>Because this sink redirects messages to another logging system,
         /// it is recommended to allow all event levels to pass through.</remarks>
         public static LoggerConfiguration MSBuild(this LoggerSinkConfiguration sinkConfiguration, ITask task,
-            IFormatProvider formatProvider = null) =>
+            IFormatProvider? formatProvider = null) =>
             sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(task, formatProvider));
     }
 }
