@@ -1,18 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>1.2.1</Version>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net472;netstandard2.0</TargetFrameworks>
     <Title>Serilog sink for MSBuild</Title>
     <Authors>Theodore Tsirpanis</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageTags>serilog;logging;msbuild</PackageTags>
     <Description>This package provides a Serilog sink that redirects events to MSBuild.
 
-It is useful when an MSBuild task calls code that uses Serilog.</Description>
+It is useful when an MSBuild task calls code that uses Serilog.
+
+Despite the package depending on MSBuild 16.7, it will work on versions after 15.
+
+When using this package, MSBuild's assemblies are not copied, which is not a problem for custom task assemblies.</Description>
     <PackageIconUrl>https://serilog.net/images/serilog-sink-nuget.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/teo-tsirpanis/serilog-sinks-msbuild</PackageProjectUrl>
-    <PackageReleaseNotes>Allow the specification of the message subcategory.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgrade the MSBuild dependencies.
+Add a .NET Framework 4.7.2 target that uses MSBuild 15+ instead of MSBuild 4.0.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -22,7 +27,7 @@ It is useful when an MSBuild task calls code that uses Serilog.</Description>
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19351-01" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
@@ -30,9 +35,9 @@ It is useful when an MSBuild task calls code that uses Serilog.</Description>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Build.Framework" Version="14.3.0" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="14.3.0" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net45'">
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.7.0" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.7.0" ExcludeAssets="runtime" />
   </ItemGroup>
 
 </Project>
