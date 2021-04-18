@@ -93,14 +93,24 @@ namespace Serilog.Sinks.MSBuild
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
-            string? GetStringOrNull(string key) =>
-                logEvent.Properties.TryGetValue(key, out var value) ? value.ToString() : null;
+            object? GetScalarValueOrNull(string key)
+            {
+                if (!logEvent.Properties.TryGetValue(key, out var value)) return null;
+                return value is ScalarValue scalarValue ? scalarValue.Value : null;
+            }
 
-            int GetIntOrZero(string key) =>
-                logEvent.Properties.TryGetValue(key, out var value) && value is ScalarValue scalar &&
-                scalar.Value is int numValue
-                    ? numValue
-                    : 0;
+            string? GetStringOrNull(string key) =>
+                GetScalarValueOrNull(key)?.ToString();
+
+            int GetIntOrZero(string key)
+            {
+                var scalarValue = GetScalarValueOrNull(key);
+
+                if (scalarValue == null) return 0;
+                if (scalarValue is int intValue) return intValue;
+                if (int.TryParse(scalarValue.ToString(), out intValue)) return intValue;
+                return 0;
+            }
 
             string? subcategory = GetStringOrNull(Subcategory);
             string? code = GetStringOrNull(MessageCode);
