@@ -23,7 +23,7 @@ public class MyTask: Task {
 
 ## Important properties
 
-Some Serilog properties are important for this sink, as carry significant information for MSBuild.
+Some Serilog properties carry meaningful information for MSBuild, like message code, file and line and column numbers.
 
 They are covered in `Serilog.Sinks.MSBuild.MSBuildMessages`.
 
