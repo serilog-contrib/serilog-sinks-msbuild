@@ -80,14 +80,27 @@ namespace Serilog.Sinks.MSBuild
         private readonly TaskLoggingHelper _loggingHelper;
 
         /// <summary>
-        /// Creates an <see cref="MSBuildSink"/> for <paramref name="task"/>.
+        /// Creates an <see cref="MSBuildSink"/> from an <see cref="ITask"/>.
         /// </summary>
         /// <param name="task">The <see cref="ITask"/> inside which events are sent.</param>
-        /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
+        /// <param name="formatProvider">Supplies culture-specific
+        /// formatting information, or <see langword="null"/>.</param>
         public MSBuildSink(ITask task, IFormatProvider? formatProvider = null)
         {
             _formatProvider = formatProvider;
             _loggingHelper = task is Task taskConcrete ? taskConcrete.Log : new TaskLoggingHelper(task);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="MSBuildSink"/> from a <see cref="TaskLoggingHelper"/>.
+        /// </summary>
+        /// <param name="loggingHelper">The <see cref="TaskLoggingHelper"/> to which events are sent.</param>
+        /// <param name="formatProvider">Supplies culture-specific
+        /// formatting information, or <see langword="null"/>.</param>
+        public MSBuildSink(TaskLoggingHelper loggingHelper, IFormatProvider? formatProvider = null)
+        {
+            _formatProvider = formatProvider;
+            _loggingHelper = loggingHelper;
         }
 
         /// <inheritdoc cref="ILogEventSink.Emit"/>
@@ -161,7 +174,7 @@ namespace Serilog.Sinks.MSBuild
 namespace Serilog
 {
     /// <summary>
-    /// Adds the <c>WriteTo.MSBuild()</c> extension method to <see cref="LoggerConfiguration"/>.
+    /// Adds the <c>WriteTo.MSBuild()</c> extension methods to <see cref="LoggerConfiguration"/>.
     /// </summary>
     public static class MSBuildSinkConfigurationExtensions
     {
@@ -177,5 +190,18 @@ namespace Serilog
         public static LoggerConfiguration MSBuild(this LoggerSinkConfiguration sinkConfiguration, ITask task,
             IFormatProvider? formatProvider = null) =>
             sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(task, formatProvider));
+        
+        /// <summary>
+        /// Redirects log events to a <see cref="TaskLoggingHelper"/>.
+        /// </summary>
+        /// <param name="sinkConfiguration">Logger sink configuration.</param>
+        /// <param name="loggingHelper">The MSBuild <see cref="TaskLoggingHelper"/> to log events to.</param>
+        /// <param name="formatProvider">Supplies culture-specific formatting information, or <c>null</c>.</param>
+        /// <returns>Configuration object allowing method chaining.</returns>
+        /// <remarks>Because this sink redirects messages to another logging system,
+        /// it is recommended to allow all event levels to pass through.</remarks>
+        public static LoggerConfiguration MSBuild(this LoggerSinkConfiguration sinkConfiguration,
+            TaskLoggingHelper loggingHelper, IFormatProvider? formatProvider = null) =>
+            sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(loggingHelper, formatProvider));
     }
 }
