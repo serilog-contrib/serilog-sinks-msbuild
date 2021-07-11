@@ -153,7 +153,7 @@ namespace Serilog.Sinks.MSBuild
                     _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     if (logEvent.Exception != null)
-                        _loggingHelper.LogWarningFromException(logEvent.Exception);
+                        _loggingHelper.LogWarningFromException(logEvent.Exception, true);
                     break;
                 case LogEventLevel.Fatal:
                 case LogEventLevel.Error:
@@ -162,7 +162,7 @@ namespace Serilog.Sinks.MSBuild
                     _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     if (logEvent.Exception != null)
-                        _loggingHelper.LogErrorFromException(logEvent.Exception, false, false, file);
+                        _loggingHelper.LogErrorFromException(logEvent.Exception, true, true, file);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
