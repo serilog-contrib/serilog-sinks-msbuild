@@ -1,5 +1,13 @@
-# Contributor Code of Conduct
+# Code of Conduct
 
-This project adheres to No Code of Conduct.  We are all adults.  We accept anyone's contributions.  Nothing else matters.
+The [Serilog Organization](https://github.com/serilog), its related [sinks][sinks] and [community projects][projects] have adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/)
+to clarify expected behavior in our community.
 
-For more information please visit the [No Code of Conduct](https://github.com/domgetter/NCoC) homepage.
+## Attribution
+
+The Code of Conduct referenced can be found at the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version].
+
+[homepage]: http://contributor-covenant.org
+[version]: http://contributor-covenant.org/version/1/4/
+[projects]: https://github.com/serilog/serilog/wiki/Community-Projects
+[sinks]: https://github.com/serilog/serilog/wiki/Provided-Sinks
