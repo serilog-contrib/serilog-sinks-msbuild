@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Serilog.Configuration;
@@ -87,6 +88,8 @@ namespace Serilog.Sinks.MSBuild
         /// formatting information, or <see langword="null"/>.</param>
         public MSBuildSink(ITask task, IFormatProvider? formatProvider = null)
         {
+            if (task is null)
+                ThrowArgumentNullException(nameof(task));
             _formatProvider = formatProvider;
             _loggingHelper = task is Task taskConcrete ? taskConcrete.Log : new TaskLoggingHelper(task);
         }
@@ -99,9 +102,15 @@ namespace Serilog.Sinks.MSBuild
         /// formatting information, or <see langword="null"/>.</param>
         public MSBuildSink(TaskLoggingHelper loggingHelper, IFormatProvider? formatProvider = null)
         {
+            if (loggingHelper is null)
+                ThrowArgumentNullException(nameof(loggingHelper));
             _formatProvider = formatProvider;
             _loggingHelper = loggingHelper;
         }
+
+        [DoesNotReturn]
+        private static void ThrowArgumentNullException(string paramName) =>
+            throw new ArgumentNullException(paramName);
 
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
@@ -201,4 +210,9 @@ namespace Serilog
             TaskLoggingHelper loggingHelper, IFormatProvider? formatProvider = null) =>
             sinkConfiguration.Sink(new Sinks.MSBuild.MSBuildSink(loggingHelper, formatProvider));
     }
+}
+
+namespace System.Diagnostics.CodeAnalysis
+{
+    internal sealed class DoesNotReturnAttribute : Attribute { }
 }
