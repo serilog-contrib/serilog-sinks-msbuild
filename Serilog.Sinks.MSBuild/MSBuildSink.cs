@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Theodore Tsirpanis
+// Copyright 2019 Theodore Tsirpanis
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -135,6 +135,9 @@ namespace Serilog.Sinks.MSBuild
             int columnEndNumber = GetIntOrZero(EndColumnNumber);
             string message = logEvent.RenderMessage(_formatProvider);
 
+            if (logEvent.Exception is Exception e)
+                message += Environment.NewLine + e.ToString();
+
             switch (logEvent.Level)
             {
                 case LogEventLevel.Verbose:
@@ -152,8 +155,6 @@ namespace Serilog.Sinks.MSBuild
                 case LogEventLevel.Warning:
                     _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
-                    if (logEvent.Exception != null)
-                        _loggingHelper.LogWarningFromException(logEvent.Exception, true);
                     break;
                 case LogEventLevel.Fatal:
                 case LogEventLevel.Error:
@@ -161,8 +162,6 @@ namespace Serilog.Sinks.MSBuild
                         subcategory = subcategory ?? "Fatal error";
                     _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
-                    if (logEvent.Exception != null)
-                        _loggingHelper.LogErrorFromException(logEvent.Exception, true, true, file);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
