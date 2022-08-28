@@ -156,10 +156,8 @@ namespace Serilog.Sinks.MSBuild
                     _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     break;
-                case LogEventLevel.Fatal:
                 case LogEventLevel.Error:
-                    if (logEvent.Level == LogEventLevel.Fatal)
-                        subcategory = subcategory ?? "Fatal error";
+                case LogEventLevel.Fatal:
                     _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     break;
