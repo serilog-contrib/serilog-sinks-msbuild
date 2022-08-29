@@ -1,4 +1,4 @@
-// Copyright 2019 Theodore Tsirpanis
+﻿// Copyright 2019 Theodore Tsirpanis
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Serilog.Configuration;
@@ -26,7 +27,8 @@ using static Serilog.Sinks.MSBuild.MSBuildProperties;
 namespace Serilog.Sinks.MSBuild
 {
     /// <summary>
-    /// <see cref="LogEvent"/> property names that are significant for <see cref="MSBuildSink"/> and would give MSBuild additional information if specified.
+    /// <see cref="LogEvent"/> property names that are significant for <see cref="MSBuildSink"/>
+    /// and would give MSBuild additional information if specified.
     /// </summary>
     /// <remarks>All are optional.</remarks>
     public static class MSBuildProperties
@@ -45,6 +47,15 @@ namespace Serilog.Sinks.MSBuild
         /// The help keyword for the host IDE (can be null).
         /// </summary>
         public static readonly string HelpKeyword = nameof(HelpKeyword);
+
+        /// <summary>
+        /// A link pointing to more information about the error.
+        /// </summary>
+        /// <remarks>
+        /// Supported only for warnings and errors and in MSBuild 16.8+.
+        /// In all other cases this property will be ignored.
+        /// </remarks>
+        public static readonly string HelpLink = nameof(HelpLink);
 
         /// <summary>
         /// The path to the file causing the message.
@@ -137,6 +148,7 @@ namespace Serilog.Sinks.MSBuild
             string? subcategory = GetStringOrNull(Subcategory);
             string? code = GetStringOrNull(MessageCode);
             string? helpKeyword = GetStringOrNull(HelpKeyword);
+            string? helpLink = GetStringOrNull(HelpLink);
             string? file = GetStringOrNull(File);
             int lineNumber = GetIntOrZero(LineNumber);
             int columnNumber = GetIntOrZero(ColumnNumber);
@@ -162,16 +174,58 @@ namespace Serilog.Sinks.MSBuild
                         lineEndNumber, columnEndNumber, MessageImportance.High, message);
                     break;
                 case LogEventLevel.Warning:
-                    _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
+                    LogWarning(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     break;
                 case LogEventLevel.Error:
                 case LogEventLevel.Fatal:
-                    _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber,
+                    LogError(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber,
                         lineEndNumber, columnEndNumber, message);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        // MSBuild versions earlier than 16.8 do not support help links, so we will try to call the new overload and if
+        // it does not exist we will catch the MissingMethodException and call the old overload.
+        private void LogWarning(string? subcategory, string? code, string? helpKeyword, string? helpLink, string? file,
+            int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void LogWarning16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
+                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+            {
+                loggingHelper.LogWarning(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+
+            try
+            {
+                LogWarning16_8(_loggingHelper, subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+            catch (MissingMethodException)
+            {
+                _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+        }
+
+        private void LogError(string? subcategory, string? code, string? helpKeyword, string? helpLink, string? file,
+            int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void LogError16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
+                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+            {
+                loggingHelper.LogError(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+
+            try
+            {
+                LogError16_8(_loggingHelper, subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+            catch (MissingMethodException)
+            {
+                _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
             }
         }
     }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>1.4.0</Version>
@@ -12,7 +12,7 @@
 
 It is useful when an MSBuild task calls code that uses Serilog.
 
-Despite the package depending on MSBuild 16.7, it will work on versions after 15.
+Despite the package depending on MSBuild 16.8, it will work on versions after 15.
 
 When using this package, MSBuild's assemblies are not copied, which is not a problem for custom task assemblies.</Description>
     <PackageIcon>logo.png</PackageIcon>
@@ -37,8 +37,8 @@ Exceptions logged through this sink will now show more details.</PackageReleaseN
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net45'">
-    <PackageReference Include="Microsoft.Build.Framework" Version="16.7.0" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.7.0" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.8.0" ExcludeAssets="runtime" />
   </ItemGroup>
 
 </Project>
