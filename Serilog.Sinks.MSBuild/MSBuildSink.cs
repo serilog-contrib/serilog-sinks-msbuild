@@ -125,9 +125,60 @@ namespace Serilog.Sinks.MSBuild
         private static void ThrowArgumentNullException(string paramName) =>
             throw new ArgumentNullException(paramName);
 
+        private bool IsEnabled(LogEventLevel logLevel)
+        {
+            MessageImportance importance;
+
+            switch (logLevel)
+            {
+                case LogEventLevel.Verbose:
+                    importance = MessageImportance.Low;
+                    break;
+                case LogEventLevel.Debug:
+                    importance = MessageImportance.Normal;
+                    break;
+                case LogEventLevel.Information:
+                    importance = MessageImportance.High;
+                    break;
+                case LogEventLevel.Warning:
+                case LogEventLevel.Error:
+                case LogEventLevel.Fatal:
+                    // These are always logged.
+                    return true;
+                default:
+                    return false;
+            }
+
+            if (!s_lacksLogsMessagesOfImportance)
+            {
+                // MSBuild versions earlier than 17 do not have LogsMessagesOfImportance, so we will try to call it
+                // and if it does not exist we will swallow the MissingMethodException and return true.
+                try
+                {
+                    return LogsMessagesOfImportance_17(_loggingHelper, importance);
+                }
+                catch (MissingMethodException)
+                {
+                    // Mark that the method does not exist and don't try to call it again, to avoid the overhead of exceptions.
+                    s_lacksLogsMessagesOfImportance = true;
+                }
+            }
+
+            return true;
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static bool LogsMessagesOfImportance_17(TaskLoggingHelper loggingHelper, MessageImportance importance)
+            {
+                return loggingHelper.LogsMessagesOfImportance(importance);
+            }
+        }
+
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
+            if (!IsEnabled(logEvent.Level))
+                return;
+
             string? subcategory = GetStringOrNull(Subcategory);
             string? code = GetStringOrNull(MessageCode);
             string? helpKeyword = GetStringOrNull(HelpKeyword);
