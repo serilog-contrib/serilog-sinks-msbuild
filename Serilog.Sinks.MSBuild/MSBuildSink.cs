@@ -91,6 +91,8 @@ namespace Serilog.Sinks.MSBuild
         private readonly IFormatProvider? _formatProvider;
         private readonly TaskLoggingHelper _loggingHelper;
 
+        private static bool s_lacksLogsMessagesOfImportance;
+
         /// <summary>
         /// Creates an <see cref="MSBuildSink"/> from an <see cref="ITask"/>.
         /// </summary>
@@ -126,25 +128,6 @@ namespace Serilog.Sinks.MSBuild
         /// <inheritdoc cref="ILogEventSink.Emit"/>
         public void Emit(LogEvent logEvent)
         {
-            object? GetScalarValueOrNull(string key)
-            {
-                if (!logEvent.Properties.TryGetValue(key, out var value)) return null;
-                return value is ScalarValue scalarValue ? scalarValue.Value : null;
-            }
-
-            string? GetStringOrNull(string key) =>
-                GetScalarValueOrNull(key)?.ToString();
-
-            int GetIntOrZero(string key)
-            {
-                var scalarValue = GetScalarValueOrNull(key);
-
-                if (scalarValue == null) return 0;
-                if (scalarValue is int intValue) return intValue;
-                if (int.TryParse(scalarValue.ToString(), out intValue)) return intValue;
-                return 0;
-            }
-
             string? subcategory = GetStringOrNull(Subcategory);
             string? code = GetStringOrNull(MessageCode);
             string? helpKeyword = GetStringOrNull(HelpKeyword);
@@ -156,8 +139,8 @@ namespace Serilog.Sinks.MSBuild
             int columnEndNumber = GetIntOrZero(EndColumnNumber);
             string message = logEvent.RenderMessage(_formatProvider);
 
-            if (logEvent.Exception is Exception e)
-                message += Environment.NewLine + e.ToString();
+            if (logEvent.Exception is {} e)
+                message += Environment.NewLine + e;
 
             switch (logEvent.Level)
             {
@@ -185,6 +168,26 @@ namespace Serilog.Sinks.MSBuild
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            object? GetScalarValueOrNull(string key)
+            {
+                if (!logEvent.Properties.TryGetValue(key, out var value)) return null;
+                return value is ScalarValue scalarValue ? scalarValue.Value : null;
+            }
+
+            string? GetStringOrNull(string key) =>
+                GetScalarValueOrNull(key)?.ToString();
+
+            int GetIntOrZero(string key)
+            {
+                var scalarValue = GetScalarValueOrNull(key);
+
+                if (scalarValue == null) return 0;
+                if (scalarValue is int intValue) return intValue;
+                if (int.TryParse(scalarValue.ToString(), out intValue)) return intValue;
+                return 0;
+            }
+
         }
 
         // MSBuild versions earlier than 16.8 do not support help links, so we will try to call the new overload and if
@@ -192,13 +195,6 @@ namespace Serilog.Sinks.MSBuild
         private void LogWarning(string? subcategory, string? code, string? helpKeyword, string? helpLink, string? file,
             int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
         {
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            static void LogWarning16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
-                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
-            {
-                loggingHelper.LogWarning(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
-            }
-
             try
             {
                 LogWarning16_8(_loggingHelper, subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
@@ -207,18 +203,18 @@ namespace Serilog.Sinks.MSBuild
             {
                 _loggingHelper.LogWarning(subcategory, code, helpKeyword, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
             }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void LogWarning16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
+                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+            {
+                loggingHelper.LogWarning(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
         }
 
         private void LogError(string? subcategory, string? code, string? helpKeyword, string? helpLink, string? file,
             int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
         {
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            static void LogError16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
-                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
-            {
-                loggingHelper.LogError(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
-            }
-
             try
             {
                 LogError16_8(_loggingHelper, subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
@@ -226,6 +222,13 @@ namespace Serilog.Sinks.MSBuild
             catch (MissingMethodException)
             {
                 _loggingHelper.LogError(subcategory, code, helpKeyword, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
+            }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void LogError16_8(TaskLoggingHelper loggingHelper, string? subcategory, string? code, string? helpKeyword,
+                string? helpLink, string? file, int lineNumber, int columnNumber, int lineEndNumber, int columnEndNumber, string message)
+            {
+                loggingHelper.LogError(subcategory, code, helpKeyword, helpLink, file, lineNumber, columnNumber, lineEndNumber, columnEndNumber, message);
             }
         }
     }
