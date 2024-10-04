@@ -26,10 +26,6 @@ The translation from Serilog to MSBuild events is streamlined:
 Serilog errors and fatals are both mapped as MSBuild errors and treated identically,
 and if a Serilog message has an exception, its ToString() representation will be appended to the end.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -37,7 +33,7 @@ and if a Serilog message has an exception, its ToString() representation will be
   <ItemGroup>
     <None Include="../logo.png" Pack="true" PackagePath="" />
     <PackageReference Include="Serilog" Version="2.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
