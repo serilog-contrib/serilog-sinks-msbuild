@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>1.5.0</Version>
     <AssemblyVersion>1.3.0</AssemblyVersion>
-    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Serilog sink for MSBuild</Title>
     <Authors>Theodore Tsirpanis</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -40,7 +40,7 @@ and if a Serilog message has an exception, its ToString() representation will be
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net45'">
+  <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.8.0" ExcludeAssets="runtime" />
   </ItemGroup>
