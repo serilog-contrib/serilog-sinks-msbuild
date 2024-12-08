@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>1.6.0</Version>
@@ -16,6 +16,7 @@ Despite the package depending on MSBuild 17, it will work on versions after 15.
 
 When using this package, MSBuild's assemblies are not copied, which is not a problem for custom task assemblies.</Description>
     <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIconUrl>https://serilog.net/images/serilog-sink-nuget.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/serilog-contrib/serilog-sinks-msbuild</PackageProjectUrl>
     <PackageReleaseNotes>Emitting messages is skipped on newer MSBuild versions if they are not logged by the build engine.</PackageReleaseNotes>
@@ -25,7 +26,8 @@ When using this package, MSBuild's assemblies are not copied, which is not a pro
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../logo.png" Pack="true" PackagePath="" />
+    <None Include="../README.md" Pack="true" PackagePath="/" />
+    <None Include="../logo.png" Pack="true" PackagePath="/" />
     <PackageReference Include="Serilog" Version="2.0.0" />
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25" PrivateAssets="All" />
   </ItemGroup>
