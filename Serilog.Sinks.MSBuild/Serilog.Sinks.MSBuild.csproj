@@ -23,6 +23,8 @@ When using this package, MSBuild's assemblies are not copied, which is not a pro
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.5.0</PackageValidationBaselineVersion>
   </PropertyGroup>
 
   <ItemGroup>
